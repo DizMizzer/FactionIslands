@@ -1,0 +1,7 @@
+name: SkyBlock
+main: zubydo.skyblock.SkyBlock
+version: 1.0
+author: zubydo
+commands:
+  cw:
+depend: [WorldEdit, LegacyFactions]
