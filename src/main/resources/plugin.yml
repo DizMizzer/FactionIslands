@@ -1,0 +1,8 @@
+name: SkyBlock
+main: nl.dizmizzer.factionislandsland.SkyBlock
+version: 1.0
+author: zubydo
+commands:
+  factionisland:
+    aliases: [fi]
+depend: [WorldEdit, LegacyFactions, Vault]
