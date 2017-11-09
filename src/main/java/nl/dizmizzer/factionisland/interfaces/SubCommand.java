@@ -1,4 +1,4 @@
-package nl.dizmizzer.factionisland.commands;
+package nl.dizmizzer.factionisland.interfaces;
 
 import org.bukkit.entity.Player;
 
@@ -13,6 +13,6 @@ import org.bukkit.entity.Player;
  * a certain thing in the API, please contact
  * the developer in contact.txt.
  */
-public interface SubCommand {
+public interface SubCommand extends TextFormat {
     void execute(Player player, String[] args);
 }

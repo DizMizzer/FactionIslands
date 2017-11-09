@@ -1,9 +1,7 @@
 package nl.dizmizzer.factionisland.commands.subcommands;
 
 import net.redstoneore.legacyfactions.Role;
-import net.redstoneore.legacyfactions.entity.FPlayer;
 import net.redstoneore.legacyfactions.entity.FPlayerColl;
-import net.redstoneore.legacyfactions.entity.Faction;
 import net.redstoneore.legacyfactions.entity.FactionColl;
 import nl.dizmizzer.factionisland.interfaces.SubCommand;
 import nl.dizmizzer.factionisland.utils.CheckUtil;
@@ -20,24 +18,20 @@ import org.bukkit.entity.Player;
  * a certain thing in the API, please contact
  * the developer in contact.txt.
  */
-public class DeleteCMD implements SubCommand {
-
+public class LeaveCMD implements SubCommand {
     @Override
-    public void execute(Player player, String[] args) {
-        if (!CheckUtil.isInFaction(player)) {
-            player.sendMessage(prefix + errorColor + "You aren't in a faction!");
+    public void execute(Player p, String[] args) {
+        if (!CheckUtil.isInFaction(p)) {
+            p.sendMessage(prefix + errorColor + "You aren't in a faction!");
             return;
         }
 
-        if (!CheckUtil.isOwner(player, true)) return;
-
-        Faction f = FPlayerColl.get(player).getFaction();
-        for (FPlayer fPlayer : FPlayerColl.get(player).getFaction().getMembers()) {
-            fPlayer.setFaction(FactionColl.get("0"));
-            fPlayer.setRole(Role.NORMAL);
+        if (FPlayerColl.get(p).getFaction().getMembers().size() < 2) {
+            p.sendMessage(prefix + errorColor + "You are the last member in the faction, please do /fi delete");
+            return;
         }
-
-        f.remove();
-        player.sendMessage(prefix + chatColor + "Your faction has been deleted!");
+        FPlayerColl.get(p).setFaction(FactionColl.get("0"));
+        FPlayerColl.get(p).setRole(Role.NORMAL);
+        p.sendMessage(prefix + chatColor + "You have left the faction!");
     }
 }

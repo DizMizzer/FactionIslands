@@ -14,6 +14,7 @@ import net.redstoneore.legacyfactions.entity.FPlayer;
 import net.redstoneore.legacyfactions.entity.FPlayerColl;
 import net.redstoneore.legacyfactions.entity.Faction;
 import nl.dizmizzer.factionisland.SkyBlock;
+import nl.dizmizzer.factionisland.utils.CheckUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -25,58 +26,44 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class IslandManager {
 
+    public static File islandFile;
+    public static FileConfiguration islandConfig;
+    public static FileConfiguration config;
     static CuboidClipboard island;
     static Integer[] totalIslands = {0, 0};
     static WorldEditPlugin we;
-    private static IslandManager islandManager;
-    private static Map<UUID, Island> islands = new HashMap<>();
-    private static File islandFile;
-    private static FileConfiguration islandConfig;
+    private static IslandManager islandManager = new IslandManager();
     public Block block1;
     public Block block2;
     File file;
-    FileConfiguration config;
     SchematicFormat mcedit;
 
-    public IslandManager() throws IOException, DataException {
-
-        we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-        mcedit = MCEditSchematicFormat.getFormat(new File(SkyBlock.getSkyBlock().getDataFolder(), "Start.schematic"));
-        island = mcedit.load(new File(SkyBlock.getSkyBlock().getDataFolder(), "Start.schematic"));
-        islandManager = this;
-        registerFile();
-        registerIslandFile();
-        for (Player ps : Bukkit.getOnlinePlayers()) {
-            loadPlayer(ps);
-        }
-        loadStats();
+    public IslandManager() {
     }
 
-    public static void createIsland(Player p, Faction f) {
+    public static void createIsland(Player p, Faction f, Integer[] totalIslands) {
         int x = totalIslands[0] * 256;
         int z = totalIslands[1] * 256;
-        Location loc = new Location(SkyBlock.getSkyBlock().world, x, 57, z);
+        Location loc = new Location(SkyBlock.getSkyBlock().world, x, 26, z);
 
         for (int xx = 0; xx < 256; xx = xx + 16) {
             for (int zz = 0; zz < 256; zz = zz + 16) {
-                FLocation fLocation = FLocation.valueOf(new Location(SkyBlock.getSkyBlock().world, x + xx + 1, 55, z + zz + 1));
-                Board.get().setFactionAt(f, fLocation);
+                if (xx / 16 >= 4 && xx / 16 <= 7 && zz / 16 >= 4 && zz / 16 <= 7) {
+                    FLocation fLocation = FLocation.valueOf(new Location(SkyBlock.getSkyBlock().world, x + xx + 1, 55, z + zz + 1));
+                    Board.get().setFactionAt(f, fLocation);
+                }
             }
         }
         int islandsizeZ = island.getLength() / 2;
         int islandsizeX = island.getWidth() / 2;
 
-        Location playerLoc = loc.clone().add(128 - islandsizeX, 1, 128 - islandsizeZ);
+        Location playerLoc = loc.clone().add(128 - islandsizeX - 9, 0, 128 - islandsizeZ - 8);
         playerLoc.setYaw(-180);
 
         Island il = new Island(p, playerLoc, false);
-        islands.put(p.getUniqueId(), il);
         try {
 
             island.paste(we.getSession(p).createEditSession(we.wrapPlayer(p)), BukkitUtil.toVector(playerLoc), true);
@@ -92,12 +79,10 @@ public class IslandManager {
         s.set("spawn.x", il.getLocation().getX());
         s.set("spawn.y", il.getLocation().getY());
         s.set("spawn.z", il.getLocation().getZ());
-        totalIslands = getNext(totalIslands[0], totalIslands[1]);
     }
 
     public static void deleteIsland(Player p) {
         p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-        islands.remove(p.getUniqueId());
         islandConfig.set(p.getUniqueId().toString(), null);
     }
 
@@ -157,6 +142,27 @@ public class IslandManager {
         }
     }
 
+    public void onEnable() throws IOException, DataException {
+        registerFile();
+        registerIslandFile();
+        we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+        mcedit = MCEditSchematicFormat.getFormat(new File(SkyBlock.getSkyBlock().getDataFolder(), "Start.schematic"));
+        island = mcedit.load(new File(SkyBlock.getSkyBlock().getDataFolder(), "Start.schematic"));
+        for (Player ps : Bukkit.getOnlinePlayers()) {
+            loadPlayer(ps);
+        }
+        loadStats();
+
+    }
+
+    public Integer[] getLastIsland() {
+        return totalIslands;
+    }
+
+    public void goNext() {
+        totalIslands = getNext(totalIslands[0], totalIslands[1]);
+    }
+
     private void registerFile() {
         if (!SkyBlock.getSkyBlock().getDataFolder().exists()) {
             SkyBlock.getSkyBlock().getDataFolder().mkdir();
@@ -206,17 +212,13 @@ public class IslandManager {
     public void onDisable() {
         islandConfig.set("last-island", totalIslands[0] + "_" + totalIslands[1]);
         saveFiles();
-        for (Player ps : Bukkit.getOnlinePlayers()) {
-            unloadPlayer(ps);
-        }
-
     }
 
     public void addPlayer(Player player) {
         FPlayer fPlayer = FPlayerColl.get(player);
         String factionID = fPlayer.getFaction().getId();
         config.set(fPlayer.getId() + ".factionID", factionID);
-        config.set(fPlayer.getId() + ".role", fPlayer.getRole());
+        config.set(fPlayer.getId() + ".role", fPlayer.getRole().toString());
     }
 
     public void setSpawn(String FactionID, Location loc) {
@@ -226,14 +228,19 @@ public class IslandManager {
     }
 
     private void registerIslandFile() {
+        if (!SkyBlock.getSkyBlock().getDataFolder().exists()) {
+            SkyBlock.getSkyBlock().getDataFolder().mkdir();
+        }
         islandFile = new File(SkyBlock.getSkyBlock().getDataFolder(), "islands.yml");
         try {
             islandFile.createNewFile();
+            islandConfig = YamlConfiguration.loadConfiguration(islandFile);
+            islandConfig.set("last-island", "0_0");
+            saveIslands();
         } catch (IOException e) {
             e.printStackTrace();
         }
         islandConfig = YamlConfiguration.loadConfiguration(islandFile);
-        islandConfig.set("last-island", "0_0");
         Bukkit.getLogger().severe("Island Config succesfully loaded!");
     }
 
@@ -250,33 +257,35 @@ public class IslandManager {
             double x = s.getDouble("x");
             double z = s.getDouble("z");
             Island i = new Island(p, new Location(SkyBlock.getSkyBlock().world, x, 72, z), false);
-            islands.put(p.getUniqueId(), i);
-        }
-    }
 
-    public void unloadPlayer(Player p) {
-        if (hasIsland(p)) {
-            islands.remove(p.getUniqueId());
         }
     }
 
     public Island getIsland(Player p) {
         if (hasIsland(p)) {
-            return islands.get(FPlayerColl.get(p).getFaction().getId());
+            return new Island(p, new Location(SkyBlock.getSkyBlock().world,
+                    islandConfig.getDouble(FPlayerColl.get(p).getFaction().getOwner().getId() + ".spawn.x"),
+                    islandConfig.getDouble(FPlayerColl.get(p).getFaction().getOwner().getId() + ".spawn.y"),
+                    islandConfig.getDouble(FPlayerColl.get(p).getFaction().getOwner().getId() + ".spawn.z")
+            ), false
+            );
         }
         return null;
     }
 
     public void sendHome(Player p) {
-        p.teleport(getIsland(p).getSpawnLocation());
+        p.teleport(getIsland(p).getLocation());
     }
 
     public boolean hasIsland(Player p) {
-        return islands.containsKey(p.getUniqueId());
+        if (!CheckUtil.isInFaction(p)) return false;
+        if (FPlayerColl.get(p).getFaction().getOwner() == null) return false;
+        return islandConfig.contains(FPlayerColl.get(p).getFaction().getOwner().getId());
     }
 
-    public boolean hasIsland(String UUID) {
-        return islands.containsKey(UUID);
+    public boolean hasIsland(String uuid) {
+        if (uuid == null) return false;
+        return islandConfig.contains(uuid);
     }
 
     public Integer[] getTotalIslands() {

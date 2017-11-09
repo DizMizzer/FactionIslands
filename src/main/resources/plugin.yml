@@ -1,5 +1,5 @@
-name: SkyBlock
-main: nl.dizmizzer.factionislandsland.SkyBlock
+name: FactionIsland
+main: nl.dizmizzer.factionisland.SkyBlock
 version: 1.0
 author: zubydo
 commands:

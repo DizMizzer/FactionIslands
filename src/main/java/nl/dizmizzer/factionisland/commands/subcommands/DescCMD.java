@@ -1,10 +1,6 @@
 package nl.dizmizzer.factionisland.commands.subcommands;
 
-import net.redstoneore.legacyfactions.Role;
-import net.redstoneore.legacyfactions.entity.FPlayer;
 import net.redstoneore.legacyfactions.entity.FPlayerColl;
-import net.redstoneore.legacyfactions.entity.Faction;
-import net.redstoneore.legacyfactions.entity.FactionColl;
 import nl.dizmizzer.factionisland.interfaces.SubCommand;
 import nl.dizmizzer.factionisland.utils.CheckUtil;
 import org.bukkit.entity.Player;
@@ -20,24 +16,27 @@ import org.bukkit.entity.Player;
  * a certain thing in the API, please contact
  * the developer in contact.txt.
  */
-public class DeleteCMD implements SubCommand {
 
+public class DescCMD implements SubCommand {
     @Override
     public void execute(Player player, String[] args) {
+
+        //Check Faction
         if (!CheckUtil.isInFaction(player)) {
             player.sendMessage(prefix + errorColor + "You aren't in a faction!");
             return;
         }
-
         if (!CheckUtil.isOwner(player, true)) return;
-
-        Faction f = FPlayerColl.get(player).getFaction();
-        for (FPlayer fPlayer : FPlayerColl.get(player).getFaction().getMembers()) {
-            fPlayer.setFaction(FactionColl.get("0"));
-            fPlayer.setRole(Role.NORMAL);
+        if (args.length < 2) {
+            player.sendMessage(prefix + errorColor + "Please do /fi desc <description>");
+            return;
         }
 
-        f.remove();
-        player.sendMessage(prefix + chatColor + "Your faction has been deleted!");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            sb.append(args[i] + " ");
+        }
+        FPlayerColl.get(player).getFaction().setDescription(sb.toString());
+        player.sendMessage(prefix + chatColor + "Succesfully changed description to: " + sb.toString());
     }
 }

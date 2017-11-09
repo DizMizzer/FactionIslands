@@ -1,7 +1,6 @@
 package nl.dizmizzer.factionisland.commands.subcommands;
 
-import net.redstoneore.legacyfactions.Role;
-import net.redstoneore.legacyfactions.entity.FPlayer;
+import net.redstoneore.legacyfactions.Relation;
 import net.redstoneore.legacyfactions.entity.FPlayerColl;
 import net.redstoneore.legacyfactions.entity.Faction;
 import net.redstoneore.legacyfactions.entity.FactionColl;
@@ -20,24 +19,26 @@ import org.bukkit.entity.Player;
  * a certain thing in the API, please contact
  * the developer in contact.txt.
  */
-public class DeleteCMD implements SubCommand {
+public class AllyCMD implements SubCommand {
 
     @Override
     public void execute(Player player, String[] args) {
-        if (!CheckUtil.isInFaction(player)) {
-            player.sendMessage(prefix + errorColor + "You aren't in a faction!");
+        if (!CheckUtil.isOwner(player, true)) return;
+
+        if (args.length < 2) {
+            player.sendMessage(prefix + errorColor + "Please add a faction id or name.");
             return;
         }
 
-        if (!CheckUtil.isOwner(player, true)) return;
-
-        Faction f = FPlayerColl.get(player).getFaction();
-        for (FPlayer fPlayer : FPlayerColl.get(player).getFaction().getMembers()) {
-            fPlayer.setFaction(FactionColl.get("0"));
-            fPlayer.setRole(Role.NORMAL);
+        Faction f = FactionColl.get(args[1]);
+        if (f == null) {
+            player.sendMessage(prefix + errorColor + "Couldn't find " + args[1] + "!");
+            return;
         }
 
-        f.remove();
-        player.sendMessage(prefix + chatColor + "Your faction has been deleted!");
+        Faction owned = FPlayerColl.get(player).getFaction();
+        owned.setRelationWish(f, Relation.ALLY);
+        player.sendMessage(prefix + chatColor + "You are now allied with " + f.getTag() + "!");
+
     }
 }

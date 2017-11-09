@@ -1,5 +1,7 @@
 import org.junit.Test;
 
+import static java.lang.Math.abs;
+
 /**
  * Created by DizMizzer.
  * Users don't have permission to release
@@ -13,70 +15,51 @@ import org.junit.Test;
  */
 public class SpiralAlgorithm {
 
-    public static void Spiraal(int X, int Y) {
-        int x = 0, y = 0, dx = 0, dy = -1;
-        int t = Math.max(X, Y);
-        int maxI = t * t;
 
-        for (int i = 0; i < maxI; i++) {
-            if ((-X / 2 <= x) && (x <= X / 2) && (-Y / 2 <= y) && (y <= Y / 2)) {
-                System.out.println(x + "," + y);
-                //DO STUFF
-            }
+    public static Integer[] getNext(int x, int y) {
 
-            if ((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y))) {
-                t = dx;
-                dx = -dy;
-                dy = t;
-            }
-            x += dx;
-            y += dy;
+        //Corners
+        if (x == y) {
+            //Rechtsboven
+            if (x > 0)
+                return new Integer[]{x - 1, y};
+            //linksonder
+            if (x < 0)
+                return new Integer[]{x + 1, y};
+            //Midden
+            if (x == 0)
+                return new Integer[]{1, 0};
         }
-    }
 
-    public void print(Object... a) {
-        String c = "";
-        for (Object ab : a) {
-            c = c + ab + " ";
+        if (x == -y) {
+            if (x < 0)
+                return new Integer[]{x, y - 1};
+            if (x > 0)
+                return new Integer[]{x + 1, y};
         }
-        System.out.println(c);
 
+        //Rechtdoor
+        if (x - y > 0) {
+            if (abs(x) > abs(y)) {
+                return new Integer[]{x, y + 1};
+            } else {
+                return new Integer[]{x + 1, y};
+            }
+        }
+        if (x - y < 0) {
+            if (abs(x) > abs(y)) {
+                return new Integer[]{x, y - 1};
+            } else {
+                return new Integer[]{x - 1, y};
+            }
+        }
+        return new Integer[]{0, 0};
     }
 
     @Test
-    public void main() {
-        int[] begin = {1, 0};
-        int x = -6 * 256;
-        int z = 0 * 256;
-        for (int i = -5; i < 5; i++)
-            for (int xx = 0; xx < 256; xx = xx + 16) {
-                for (int zz = 0; zz < 256; zz = zz + 16) {
-                    print(xx + x + 1, zz + z + 1);
-                    x = i * 256;
-
-                }
-            }
-
+    public void main() throws Exception {
+        Integer[] test = getNext(0, 0);
     }
 
-    int[] Spiral(int max) {
-        int x, y, dx, dy;
-        x = y = dx = 0;
-        dy = -1;
-        int t = max;
-        int maxI = t * t;
-        for (int i = 0; i < maxI; i++) {
-            if ((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y))) {
-                t = dx;
-                dx = -dy;
-                dy = t;
-            }
-            x += dx;
-            y += dy;
-            if (i == maxI - 1) {
-                return new int[]{x, y};
-            }
-        }
-        return new int[]{0, 0};
-    }
+
 }

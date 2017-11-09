@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class SkyBlockGen extends ChunkGenerator {
 
+
     @Override
     public boolean canSpawn(World world, int x, int z) {
         return true;
@@ -27,7 +28,7 @@ public class SkyBlockGen extends ChunkGenerator {
                 result[xyzToByte(x, y, z)] = (byte) Material.BEDROCK.getId();
             }
         }
-        for (y = 1; y < 51; y++) {
+        for (y = 1; y < 20; y++) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     result[xyzToByte(x, y, z)] = (byte) Material.WATER.getId();
