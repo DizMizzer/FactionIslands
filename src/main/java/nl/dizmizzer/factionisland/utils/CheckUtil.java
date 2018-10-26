@@ -51,4 +51,18 @@ public class CheckUtil implements TextFormat {
     public static boolean isInFaction(FPlayer player) {
         return !player.getFaction().getId().equalsIgnoreCase("0");
     }
+
+    public static boolean canPromote(Player player, boolean message) {
+        if (FPlayerColl.get(player).getFaction() == null || FPlayerColl.get(player).getFaction().getId().equalsIgnoreCase("0")) {
+            if (message) player.sendMessage(prefix + errorColor + "You aren't in a faction!");
+            return false;
+        }
+        if (FPlayerColl.get(player).getRole() != Role.ADMIN && FPlayerColl.get(player).getRole() != Role.COLEADER) {
+            if (message) player.sendMessage(prefix + errorColor + "You cannot invite people to the faction!");
+            return false;
+        }
+
+        return true;
+
+    }
 }

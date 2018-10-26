@@ -7,6 +7,7 @@ import net.redstoneore.legacyfactions.entity.Faction;
 import net.redstoneore.legacyfactions.entity.FactionColl;
 import nl.dizmizzer.factionisland.interfaces.SubCommand;
 import nl.dizmizzer.factionisland.utils.CheckUtil;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 /**
@@ -36,8 +37,11 @@ public class DeleteCMD implements SubCommand {
             fPlayer.setFaction(FactionColl.get("0"));
             fPlayer.setRole(Role.NORMAL);
         }
-
+        f.setTag("");
+        f.setId("0");
+        f.clearAllClaimOwnership();
         f.remove();
         player.sendMessage(prefix + chatColor + "Your faction has been deleted!");
+
     }
 }

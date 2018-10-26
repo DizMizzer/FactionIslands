@@ -38,6 +38,7 @@ public class CreateCMD implements SubCommand {
             p.sendMessage(prefix + errorColor + "Please define a faction name!");
             return;
         }
+        args[1] = args[1].replaceAll("[^A-Za-z0-9]", "");
 
         if (!IslandManager.getIslandManager().hasIsland(CheckUtil.getFactionOwnerId(p))) {
             if (FactionColl.get().getByTag(args[1]) != null) {

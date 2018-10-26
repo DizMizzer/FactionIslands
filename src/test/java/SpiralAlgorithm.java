@@ -1,4 +1,4 @@
-import org.junit.Test;
+import net.redstoneore.legacyfactions.Role;
 
 import static java.lang.Math.abs;
 
@@ -56,9 +56,23 @@ public class SpiralAlgorithm {
         return new Integer[]{0, 0};
     }
 
-    @Test
     public void main() throws Exception {
-        Integer[] test = getNext(0, 0);
+        Role a = Role.NORMAL;
+        Role b = Role.MODERATOR;
+        Role c = Role.ADMIN;
+        Role d = Role.COLEADER;
+        System.out.println(a.compareTo(a));
+        System.out.println(a.compareTo(b));
+        System.out.println(a.compareTo(c));
+        System.out.println(a.compareTo(d));
+
+        System.out.println(b.compareTo(a));
+        System.out.println(b.compareTo(c));
+        System.out.println(b.compareTo(d));
+
+        System.out.println(c.compareTo(d));
+        System.out.println(c.compareTo(b));
+
     }
 
 

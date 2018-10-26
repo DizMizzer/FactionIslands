@@ -1,6 +1,9 @@
 package nl.dizmizzer.factionisland.commands.subcommands;
 
+import net.redstoneore.legacyfactions.entity.FPlayer;
+import net.redstoneore.legacyfactions.entity.FPlayerColl;
 import nl.dizmizzer.factionisland.interfaces.SubCommand;
+import nl.dizmizzer.factionisland.utils.CheckUtil;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,6 +20,19 @@ import org.bukkit.entity.Player;
 public class InfoCMD implements SubCommand {
     @Override
     public void execute(Player player, String[] args) {
+        FPlayer fplayer = FPlayerColl.get(player);
+        player.sendMessage(chatColor + "----------------------");
+        if (!CheckUtil.isInFaction(player)) {
+            player.sendMessage("Name: Factionless" );
+            player.sendMessage(chatColor + "----------------------");
+            return;
+        }
 
+        player.sendMessage(chatColor + "Name: " + fplayer.getFaction().getTag());
+        player.sendMessage(chatColor + "Id: " + fplayer.getFaction().getId());
+        player.sendMessage(chatColor + "Description: " + fplayer.getFaction().getDescription());
+        player.sendMessage(chatColor + "Members: " + fplayer.getFaction().getMembers().size());
+        player.sendMessage(chatColor + "Owner: " + fplayer.getFaction().getOwner().getName());
+        player.sendMessage(chatColor + "----------------------");
     }
 }

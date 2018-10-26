@@ -19,7 +19,7 @@ public class PlayerCommand implements Listener {
 
     @EventHandler
     public void onChat(PlayerCommandPreprocessEvent e) {
-        if (e.getMessage().split(" ")[0].equalsIgnoreCase("/f") || e.getMessage().split(" ")[0].equalsIgnoreCase("/factions")) {
+        if (e.getMessage().split(" ")[0].equalsIgnoreCase("/f") || e.getMessage().split(" ")[0].equalsIgnoreCase("/factions") || e.getMessage().split(" ")[0].equalsIgnoreCase("/legacyfactions")) {
             e.getPlayer().sendMessage("Unknown command. Type \"/help\" for help.");
             e.setCancelled(true);
         }

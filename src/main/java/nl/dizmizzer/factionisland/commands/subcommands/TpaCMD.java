@@ -24,6 +24,6 @@ public class TpaCMD implements SubCommand {
 
     @Override
     public void execute(Player player, String[] args) {
-
+        player.sendMessage(errorColor + "We are still working on this! Stay tuned!");
     }
 }

@@ -5,4 +5,4 @@ author: zubydo
 commands:
   factionisland:
     aliases: [fi]
-depend: [WorldEdit, LegacyFactions, Vault]
+depend: [WorldEdit, LegacyFactions]

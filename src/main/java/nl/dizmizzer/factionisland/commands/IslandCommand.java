@@ -30,15 +30,17 @@ public class IslandCommand implements CommandExecutor, TextFormat {
         classes.put("ally", new AllyCMD());
         classes.put("enemy", new EnemyCMD());
 
+
         //TODO Test The following classes!
         classes.put("invite", new InviteCMD());
         classes.put("accept", new AcceptCMD());
         classes.put("deny", new DenyCMD());
+        classes.put("promote", new PromoteCMD());
+        classes.put("demote", new DemoteCMD());
+        classes.put("kick", new KickCMD()) ;
 
         //TODO These classes below
-        classes.put("promote", new PromoteCMD());
         classes.put("info", new InfoCMD());
-        classes.put("demote", new DemoteCMD());
         classes.put("tpa", new TpaCMD()); //TODO Request, Accept, deny
         classes.put("list", new ListCMD());
     }
